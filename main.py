@@ -91,30 +91,28 @@ def scan_music():
         playlist = sp.user_playlist_create(username, playlist_name, public=True)
         playlist_id = playlist['id']
         
-        # Iterate through audio files
-        for file_name in os.listdir(audio_dir):
-            file_path = os.path.join(audio_dir, file_name)
-            
-            # Read metadata from audio file
-            tag = TinyTag.get(file_path)
-            artist = tag.artist
-            title = tag.title
-            
-            # Search for the song on Spotify
-            results = sp.search(q=f'artist:{artist} track:{title}', type='track', limit=1)
-            if results['tracks']['items']:
-                track_id = results['tracks']['items'][0]['id']
-                
+        # Add songs to the playlist
+        # walk through the audio directory and all subdirectories
+        for root, _, files in os.walk(audio_dir):
+            for file in files:
+                # get the full path of the file
+                file_path = os.path.join(root, file)
+                # Read metadata from audio file
+                tag = TinyTag.get(file_path)
+                artist = tag.artist
+                title = tag.title
+                # Search for the song on Spotify
+                result = sp.search(q=f'artist:{artist} track:{title}')
+                # Get the first result
+                track = result['tracks']['items'][0]
+                track_id = track['id']
                 # Add the song to the playlist
                 sp.user_playlist_add_tracks(username, playlist_id, [track_id])
-                print(f'Added {artist} - {title} to playlist')
-            else:
-                # create a file with the songs not found
-                print(f'Song not found on Spotify: {artist} - {title} - file: {file_name}')
-                with open("songs_not_found.txt", "a") as f:
-                    f.write(f'{artist} - {title} - { file_name} \n')
+                print(f'Added {artist} - {title} to {playlist_name}')
     else:
-        print("Couldn't get token for", username)
+        print("Can't get token for", username)
+        
+        
         
     
 def classify_music():
