@@ -11,11 +11,14 @@ def main():
     print("Welcome to the Spotify Scanner")
     print("1. Scan music")
     print("2. Classify music")
+    print("q. Quit")
     choice = input("Enter your choice: ")
     if choice == "1":
         scan_music()
     elif choice == "2":
         classify_music()
+    elif choice == "q":
+        exit(0)
     else:
         print("Invalid choice")
         # prompt again
