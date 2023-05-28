@@ -1,5 +1,6 @@
 import os
 import shutil
+import signal
 import requests
 import spotipy
 import spotipy.util as util
@@ -7,6 +8,7 @@ from tinytag import TinyTag
 
 
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
    # prompt the user whether to use the music scanner or the music classifier
     print("Welcome to the Spotify Scanner")
     print("1. Scan music")
@@ -107,11 +109,14 @@ def scan_music():
                 # Search for the song on Spotify
                 result = sp.search(q=f'artist:{artist} track:{title}')
                 # Get the first result
-                track = result['tracks']['items'][0]
-                track_id = track['id']
-                # Add the song to the playlist
-                sp.user_playlist_add_tracks(username, playlist_id, [track_id])
-                print(f'Added {artist} - {title} to {playlist_name}')
+                if result['tracks']['items']:
+                    track = result['tracks']['items'][0]
+                    track_id = track['id']
+                    # Add the song to the playlist
+                    sp.user_playlist_add_tracks(username, playlist_id, [track_id])
+                    print(f'Added {artist} - {title} to {playlist_name}')
+                else:
+                    print(f'No track found for {artist} - {title}')
     else:
         print("Can't get token for", username)
         
@@ -157,9 +162,10 @@ def classify_music():
             
             
             
-            
-            
-                    
+# signal handler for ctrl+c
+def signal_handler(sig, frame):
+    print("Exiting...")
+    exit(0)
                     
 
     
