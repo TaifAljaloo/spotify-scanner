@@ -20,6 +20,7 @@ def main():
     elif choice == "2":
         classify_music()
     elif choice == "q":
+        print("Goodbye")
         exit(0)
     else:
         print("Invalid choice")
