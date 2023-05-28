@@ -99,6 +99,8 @@ def scan_music():
         # Add songs to the playlist
         # walk through the audio directory and all subdirectories
         for root, _, files in os.walk(audio_dir):
+            # ignore lrc files
+            files = [f for f in files if not f.endswith(".lrc")]
             for file in files:
                 # get the full path of the file
                 file_path = os.path.join(root, file)
