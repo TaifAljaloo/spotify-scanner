@@ -104,8 +104,8 @@ def scan_music():
         # Add songs to the playlist
         # walk through the audio directory and all subdirectories
         for root, _, files in os.walk(audio_dir):
-            # ignore lrc files
-            files = [f for f in files if not f.endswith(".lrc")]
+            # allow only files supported by tinytag
+            files = [file for file in files if file.endswith(('.mp3', '.flac', '.m4a', '.wma', '.ogg', '.opus'))]
             for file in files:
                 # get the full path of the file
                 file_path = os.path.join(root, file)
@@ -182,8 +182,8 @@ def classify_music():
             print(f'Moved {artist} - {title} to {genre_dir}')
             
             
-            
-            
+
+
 # signal handler for ctrl+c
 def signal_handler(sig, frame):
     print("Exiting...")
