@@ -127,11 +127,7 @@ def scan_music():
                     # if the log file exists, append to it
                     log_file = os.path.join(os.getcwd(), "spotify-scanner.log")
                     with open(log_file, "a",encoding='utf-8') as f:
-                        # handle utf-8 characters for artist and title and file_path
-                        utf8_artist = artist.encode('utf-8', 'ignore').decode('utf-8')
-                        utf8_title = title.encode('utf-8', 'ignore').decode('utf-8')
-                        utf8_file_path = file_path.encode('utf-8', 'ignore').decode('utf-8')
-                        f.write(f'{utf8_artist} - {utf8_title} - {utf8_file_path}\n')
+                        f.write(f'{artist} - {title} - {file_path}\n')
                         
                         
                                 
