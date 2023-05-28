@@ -116,9 +116,14 @@ def scan_music():
                     track_id = track['id']
                     # Add the song to the playlist
                     sp.user_playlist_add_tracks(username, playlist_id, [track_id])
-                    print(f'Added {artist} - {title} to {playlist_name}')
+                    print(f'Added {artist} - {title} to {playlist_name}' - {file_path})
                 else:
                     print(f'No track found for {artist} - {title}')
+                    # move the file to a folder called "not found"
+                    not_found_dir = os.path.join(audio_dir, "not found")
+                    if not os.path.isdir(not_found_dir):
+                        os.mkdir(not_found_dir)
+                    shutil.move(file_path, not_found_dir)
     else:
         print("Can't get token for", username)
         
