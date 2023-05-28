@@ -116,7 +116,16 @@ def scan_music():
                     track_id = track['id']
                     # Add the song to the playlist
                     sp.user_playlist_add_tracks(username, playlist_id, [track_id])
-                    print(f'Added {artist} - {title} to {playlist_name}' - {file_path})
+                    print(f'Added {artist} - {title} to {playlist_name}  - {file_path}')
+                    # write log file, if it doesn't exist, create it
+                    # create the log file in the root directory of the project
+                    # if the log file exists, append to it
+                    log_file = os.path.join(os.getcwd(), "spotify-scanner.log")
+                    with open(log_file, "a") as f:
+                        f.write(f'{artist} - {title} - {file_path}\n')
+                        
+                                
+                                
                 else:
                     print(f'No track found for {artist} - {title}')
                     # move the file to a folder called "not found"
