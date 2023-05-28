@@ -30,6 +30,7 @@ def scan_music():
     
     client_id = ''
     client_secret = ''
+    username = ''
     redirect_uri = 'http://localhost:8080'
 
     # load from config file 
@@ -62,6 +63,8 @@ def scan_music():
                 client_id = line.split("=")[1].strip()
             elif line.startswith("client_secret"):
                 client_secret = line.split("=")[1].strip()
+            elif line.startswith("username"):
+                username = line.split("=")[1].strip()
 
                 
     # verify that the client_id and client_secret are not empty 
@@ -69,10 +72,6 @@ def scan_music():
         print("client_id or client_secret not found in config file")
         exit(1)
         
-        
-
-    # prompt for username
-    username = input("Enter your Spotify username: ")
 
     # opne a directory selection dialog
     audio_dir = input("Enter the directory containing the audio files: ")
