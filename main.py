@@ -5,6 +5,10 @@ import requests
 import spotipy
 import spotipy.util as util
 from tinytag import TinyTag
+from shazamio import Shazam
+import asyncio
+from mutagen.easyid3 import EasyID3
+
 
 
 def main():
@@ -13,12 +17,16 @@ def main():
     print("Welcome to the Spotify Scanner")
     print("1. Scan music")
     print("2. Classify music")
+    print("3. Song auto tagger")
     print("q. Quit")
     choice = input("Enter your choice: ")
     if choice == "1":
         scan_music()
     elif choice == "2":
         classify_music()
+    elif choice == "3":
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(auto_tag())
     elif choice == "q":
         print("Goodbye")
         exit(0)
@@ -183,8 +191,32 @@ def classify_music():
             print(f'Moved {artist} - {title} to {genre_dir}')
             
             
-
-
+async def auto_tag():
+    # get the audio directory
+    audio_dir = input("Enter the directory containing the audio files: ")
+    # verify that the directory exists if not, prompt again
+    while not os.path.isdir(audio_dir):
+        audio_dir = input("Directory not found. Enter the directory containing the audio files: ")
+    # run through all the files in the directory 
+    for file_name in os.listdir(audio_dir):
+        shazam= Shazam()
+        file_path = os.path.join(audio_dir, file_name)
+        # get the song name and artist name from the file
+        tag = EasyID3(file_path)
+        artist = tag['artist'][0]
+        title = tag['title'][0]
+        # get the song name and artist name from shazam
+        res = await shazam.recognize_song(file_path)
+        if res['track']['title'] == title and res['track']['subtitle'] == artist:
+            print(f'No change for {artist} - {title}')
+        else:
+            print(f'Changed {artist} - {title} to {res["track"]["subtitle"]} - {res["track"]["title"]}')
+            # update the metadata
+            tag['artist'] = res['track']['subtitle']
+            tag['title'] = res['track']['title']
+            tag.save()
+            
+            
 # signal handler for ctrl+c
 def signal_handler(sig, frame):
     print("Exiting...")
