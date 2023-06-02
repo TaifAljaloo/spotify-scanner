@@ -194,7 +194,14 @@ def classify_music():
         else:
             genre_dir = os.path.join(audio_dir, genre)
             if not os.path.isdir(genre_dir):
-                os.mkdir(genre_dir)
+                # handle the genre that contains a slash
+                if "/" in genre:
+                    genre = genre.replace("/", "-")
+                    genre_dir = os.path.join(audio_dir, genre)
+                    if not os.path.isdir(genre_dir):
+                        os.mkdir(genre_dir)
+                else:
+                    os.mkdir(genre_dir)
         if genre_dir != None:
             shutil.move(file_path, genre_dir)
             print(f'Moved {artist} - {title} to {genre_dir}')
