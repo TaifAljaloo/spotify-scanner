@@ -77,8 +77,8 @@ def scan_music():
 
                 
     # verify that the client_id and client_secret are not empty 
-    if client_id == "" or client_secret == "":
-        print("client_id or client_secret not found in config file")
+    if client_id == "" or client_secret == "" or username == "":
+        print("client_id , client_secret or username not found in config file")
         exit(1)
         
 
@@ -155,7 +155,6 @@ def scan_music():
         
     
 def classify_music():
-    print("classify_music")
     audio_dir = input("Enter the directory containing the audio files: ")
     # verify that the directory exists if not, prompt again
     while not os.path.isdir(audio_dir):
