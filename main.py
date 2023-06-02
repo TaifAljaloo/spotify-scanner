@@ -4,10 +4,10 @@ import signal
 import requests
 import spotipy
 import spotipy.util as util
-from tinytag import TinyTag
 from shazamio import Shazam
 import asyncio
-from mutagen.easyid3 import EasyID3
+from mutagen import File
+
 
 
 
@@ -119,9 +119,9 @@ def scan_music():
                 # get the full path of the file
                 file_path = os.path.join(root, file)
                 # Read metadata from audio file
-                tag = TinyTag.get(file_path)
-                artist = tag.artist
-                title = tag.title
+                tag = File(file_path, easy=True)
+                artist = tag['artist'][0]
+                title = tag['title'][0]
                 # Search for the song on Spotify
                 result = sp.search(q=f'artist:{artist} track:{title}')
                 # Get the first result
@@ -164,10 +164,10 @@ def classify_music():
         file_path = os.path.join(audio_dir, file_name)
         
         # Read metadata from audio file
-        tag = TinyTag.get(file_path)
-        artist = tag.artist
-        title = tag.title
-        genre = tag.genre
+        tag = File(file_path, easy=True)
+        artist = tag['artist'][0]
+        title = tag['title'][0]
+        genre = tag['genre'][0]
         
         genre_dir= None
         if genre == None:
@@ -202,7 +202,7 @@ async def auto_tag():
         shazam= Shazam()
         file_path = os.path.join(audio_dir, file_name)
         # get the song name and artist name from the file
-        tag = EasyID3(file_path)
+        tag = File(file_path, easy=True)
         artist = tag['artist'][0]
         title = tag['title'][0]
         # get the song name and artist name from shazam
