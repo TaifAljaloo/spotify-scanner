@@ -159,6 +159,10 @@ def classify_music():
     # verify that the directory exists if not, prompt again
     while not os.path.isdir(audio_dir):
         audio_dir = input("Directory not found. Enter the directory containing the audio files: ")
+    # clear log file
+    log_file = os.path.join(os.getcwd(), "spotify-classifier.log")
+    with open(log_file, "w") as f:
+        pass
     for file_name in os.listdir(audio_dir):
         file_path = os.path.join(audio_dir, file_name)
         
@@ -181,6 +185,12 @@ def classify_music():
                     os.mkdir(genre_dir)
             else:
                 print(f'Error getting genre for {artist} - {title}')
+                # write log file, if it doesn't exist, create it
+                # create the log file in the root directory of the project
+                # if the log file exists, append to it
+                log_file = os.path.join(os.getcwd(), "spotify-classifier.log")
+                with open(log_file, "a",encoding='utf-8') as f:
+                    f.write(f'Error getting : {artist} - {title} - {file_path}\n')
         else:
             genre_dir = os.path.join(audio_dir, genre)
             if not os.path.isdir(genre_dir):
@@ -188,6 +198,12 @@ def classify_music():
         if genre_dir != None:
             shutil.move(file_path, genre_dir)
             print(f'Moved {artist} - {title} to {genre_dir}')
+            # write log file, if it doesn't exist, create it
+            # create the log file in the root directory of the project
+            # if the log file exists, append to it
+            log_file = os.path.join(os.getcwd(), "spotify-classifier.log")
+            with open(log_file, "a",encoding='utf-8') as f:
+                f.write (f'moved {artist} - {title} - {file_path} to {genre_dir}\n')
             
             
 async def auto_tag():
