@@ -21,7 +21,7 @@
 
 <div align="center">
 
-![Contributors](https://img.shields.io/github/contributors/TaifAljaloo/Spotify-scanner?color=dark-green) ![Forks](https://img.shields.io/github/forks/TaifAljaloo/Spotify-scanner?style=social) ![Stargazers](https://img.shields.io/github/stars/TaifAljaloo/Spotify-scanner?style=social) ![Issues](https://img.shields.io/github/issues/TaifAljaloo/Spotify-scanner) ![License](https://img.shields.io/github/license/TaifAljaloo/Spotify-scanner)
+![Contributors](https://img.shields.io/github/contributors/TaifAljaloo/Spotify-scanner?color=dark-green) ![Forks](https://img.shields.io/github/forks/TaifAljaloo/Spotify-scanner?style=social) ![Stargazers](https://img.shields.io/github/stars/TaifAljaloo/Spotify-scanner?style=social) ![Issues](https://img.shields.io/github/issues/TaifAljaloo/Spotify-scanner) ![License](https://img.shields.io/github/license/TaifAljaloo/Spotify-scanner) ![Languages](https://img.shields.io/github/languages/count/TaifAljaloo/Spotify-scanner) ![Top Language](https://img.shields.io/github/languages/top/TaifAljaloo/Spotify-scanner)
 
 </div>
 
