@@ -35,14 +35,11 @@ def main():
         # prompt again
         main()
     
-def scan_music():
-    
-    client_id = ''
-    client_secret = ''
-    username = ''
-    redirect_uri = 'http://localhost:8080'
-
+def get_credentials():
     # load from config file 
+    client_id = ""
+    client_secret = ""
+    username = ""
     config_files= []
 
     for root, _, files in os.walk("."):
@@ -52,7 +49,11 @@ def scan_music():
                     
     if len(config_files) == 0:
         print("No config file found")
-        exit(1)
+        print("Enter your credentials manually")
+        client_id = input("Enter your client_id: ")
+        client_secret = input("Enter your client_secret: ")
+        username = input("Enter your username: ")
+        return client_id, client_secret, username
     # prompt all the config files found
     print("Select the config file:")
     for i, file in enumerate(config_files):
@@ -77,10 +78,24 @@ def scan_music():
 
                 
     # verify that the client_id and client_secret are not empty 
-    if client_id == "" or client_secret == "" or username == "":
-        print("client_id , client_secret or username not found in config file")
-        exit(1)
-        
+    if client_id == "" :
+        print("client_id is empty")
+        client_id = input("Enter your client_id: ")
+    if client_secret == "":
+        print("client_secret is empty")
+        client_secret = input("Enter your client_secret: ")
+    if username == "":
+        print("username is empty")
+        username = input("Enter your username: ")
+
+    return client_id, client_secret, username
+    
+def scan_music():
+    
+    client_id,client_secret,username= get_credentials()
+    redirect_uri = 'http://localhost:8080'
+
+            
 
     # opne a directory selection dialog
     audio_dir = input("Enter the directory containing the audio files: ")
