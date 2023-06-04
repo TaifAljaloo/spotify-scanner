@@ -89,7 +89,13 @@ def get_credentials():
         username = input("Enter your username: ")
 
     return client_id, client_secret, username
-    
+def get_directory():
+    # opne a directory selection dialog
+    audio_dir = input("Enter the directory containing the audio files: ")
+    # verify that the directory exists if not, prompt again
+    while not os.path.isdir(audio_dir):
+        audio_dir = input("Directory not found. Enter the directory containing the audio files: ")
+    return audio_dir
 def scan_music():
     
     client_id,client_secret,username= get_credentials()
@@ -98,10 +104,7 @@ def scan_music():
             
 
     # opne a directory selection dialog
-    audio_dir = input("Enter the directory containing the audio files: ")
-    # verify that the directory exists if not, prompt again
-    while not os.path.isdir(audio_dir):
-        audio_dir = input("Directory not found. Enter the directory containing the audio files: ")
+    audio_dir = get_directory()
 
     # Create a playlist
     playlist_name = input("Enter the name of the playlist: ")
@@ -170,10 +173,7 @@ def scan_music():
         
     
 def classify_music():
-    audio_dir = input("Enter the directory containing the audio files: ")
-    # verify that the directory exists if not, prompt again
-    while not os.path.isdir(audio_dir):
-        audio_dir = input("Directory not found. Enter the directory containing the audio files: ")
+    audio_dir = get_directory()
     # clear log file
     log_file = os.path.join(os.getcwd(), "spotify-classifier.log")
     with open(log_file, "w") as f:
