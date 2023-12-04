@@ -18,6 +18,7 @@ def main():
     print("1. Scan music")
     print("2. Classify music")
     print("3. Song auto tagger")
+    print("4. Merge playlists")
     print("q. Quit")
     choice = input("Enter your choice: ")
     if choice == "1":
@@ -27,6 +28,8 @@ def main():
     elif choice == "3":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(auto_tag())
+    elif choice == "4":
+        merge_playlists()
     elif choice == "q":
         print("Goodbye")
         exit(0)
@@ -253,6 +256,79 @@ async def auto_tag():
             tag['title'] = res['track']['title']
             tag.save()
             
+# Function to handle pagination and get all tracks
+def get_all_tracks(sp, username, playlist_id):
+    results = sp.user_playlist_tracks(username, playlist_id)
+    tracks = results['items']
+    while results['next']:
+        results = sp.next(results)
+        tracks.extend(results['items'])
+    return tracks
+    
+def merge_playlists():
+        # get the credentials
+    client_id,client_secret,username= get_credentials()
+    redirect_uri = 'http://localhost:8080'
+
+    # Get authorization token
+    scope = 'playlist-modify-public playlist-modify-private user-library-read' 
+    token = util.prompt_for_user_token(username, scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri)
+
+    if token:
+        # show the playlists
+        sp = spotipy.Spotify(auth=token)
+        playlists = sp.user_playlists(username)
+        for i, playlist in enumerate(playlists['items']):
+            print(f'{i}: {playlist["name"]}')
+        # prompt for the playlists to merge
+        playlist_index1 = input("Enter the number of the first playlist: ")
+        while not playlist_index1.isdigit() or int(playlist_index1) >= len(playlists['items']):
+            playlist_index1 = input("Enter the number of the first playlist: ")
+        playlist_index2 = input("Enter the number of the second playlist: ")
+        while not playlist_index2.isdigit() or int(playlist_index2) >= len(playlists['items']):
+            playlist_index2 = input("Enter the number of the second playlist: ")
+        # get the playlists
+        playlist1 = playlists['items'][int(playlist_index1)]
+        playlist2 = playlists['items'][int(playlist_index2)]
+        # merge the playlists
+        # get the tracks of the first playlist
+        tracks1 = get_all_tracks(sp, username, playlist1['id'])
+        # get the tracks of the second playlist
+        tracks2 = get_all_tracks(sp, username, playlist2['id'])
+        # get the tracks ids
+        track_ids1 = [track['track']['id'] for track in tracks1]
+        track_ids2 = [track['track']['id'] for track in tracks2]
+        print(f'Playlist 1: {playlist1["name"]} - {len(track_ids1)} tracks')
+        print(f'Playlist 2: {playlist2["name"]} - {len(track_ids2)} tracks')
+        # merge the tracks
+        track_ids = track_ids1 + track_ids2
+        # identify duplicates
+        track_id_counts = {}
+        for track_id in track_ids:
+            if track_id in track_id_counts:
+                track_id_counts[track_id] += 1
+        else:
+            track_id_counts[track_id] = 1
+        duplicates = [track_id for track_id, count in track_id_counts.items() if count > 1]
+        # write duplicates to a file
+        with open('duplicates.txt', 'w') as f:
+            for track_id in duplicates:
+                f.write(f'{track_id}\n')
+        # remove duplicates
+        track_ids = list(set(track_ids))
+       # create a new playlist
+        playlist_name = input("Enter the name of the playlist: ")
+        if playlist_name == "":
+            playlist_name = f'{playlist1["name"]} + {playlist2["name"]}'
+        playlist = sp.user_playlist_create(username, playlist_name, public=True)
+        playlist_id = playlist['id']
+        # add the tracks to the new playlist
+        for i in range(0, len(track_ids), 100):
+            sp.user_playlist_add_tracks(username, playlist_id, track_ids[i:i+100])
+        print(f'Created playlist {playlist_name}')
+    else:
+        print("Can't get token for", username)
+
             
 # signal handler for ctrl+c
 def signal_handler(sig, frame):
