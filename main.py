@@ -19,6 +19,7 @@ def main():
     print("2. Classify music")
     print("3. Song auto tagger")
     print("4. Merge playlists")
+    print("5. playlist genres into playlists")
     print("q. Quit")
     choice = input("Enter your choice: ")
     if choice == "1":
@@ -30,6 +31,8 @@ def main():
         loop.run_until_complete(auto_tag())
     elif choice == "4":
         merge_playlists()
+    elif choice == "5":
+        playlist_genres_into_playlists()
     elif choice == "q":
         print("Goodbye")
         exit(0)
@@ -329,6 +332,52 @@ def merge_playlists():
     else:
         print("Can't get token for", username)
 
+
+def playlist_genres_into_playlists():
+    # get the credentials
+    client_id,client_secret,username= get_credentials()
+    redirect_uri = 'http://localhost:8080'
+
+    # Get authorization token
+    scope = 'playlist-modify-public playlist-modify-private user-library-read'
+    token = util.prompt_for_user_token(username, scope, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri)
+
+    if token:
+        # show the playlists
+        sp = spotipy.Spotify(auth=token)
+        playlists = sp.user_playlists(username)
+        for i, playlist in enumerate(playlists['items']):
+            print(f'{i}: {playlist["name"]}')
+        # prompt the user for the playlist to use
+        playlist_index = input("Enter the number of the playlist: ")
+        while not playlist_index.isdigit() or int(playlist_index) >= len(playlists['items']):
+            playlist_index = input("Enter the number of the playlist: ")
+        # get the playlist
+        playlist = playlists['items'][int(playlist_index)]
+        # get the tracks of the playlist
+        tracks = get_all_tracks(sp, username, playlist['id'])
+        # create playlists for each genre
+        genres = {}
+        for track in tracks:
+            # get the genre of the track
+            genre = track['track']['album']['genres'][0]
+            if genre in genres:
+                genres[genre].append(track['track']['id'])
+            else:
+                genres[genre] = [track['track']['id']]
+        # create a playlist for each genre
+        for genre, track_ids in genres.items():
+            # create a new playlist
+            playlist_name = f'{playlist["name"]} - {genre}'
+            playlist = sp.user_playlist_create(username, playlist_name, public=True)
+            playlist_id = playlist['id']
+            # add the tracks to the new playlist
+            for i in range(0, len(track_ids), 100):
+                sp.user_playlist_add_tracks(username, playlist_id, track_ids[i:i+100])
+            print(f'Created playlist {playlist_name}')
+    else:
+        print("Can't get token for", username)
+        
             
 # signal handler for ctrl+c
 def signal_handler(sig, frame):
