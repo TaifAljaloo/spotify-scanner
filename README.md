@@ -63,11 +63,7 @@ To use this project, you need to install the following dependencies:
 - [Python 3+](https://www.python.org/downloads/)
 - Python libraries:
   ```bash
-    pip install spotipy
-    pip install shazamio
-    pip install mutagen
-    pip install shutil
-    pip install requests
+    pip install -r requirements.txt
     ```	
 - [FFmpeg](https://ffmpeg.org/download.html)
 
